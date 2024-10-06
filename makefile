@@ -2,21 +2,22 @@ BINARY = exec
 BUILDIR = build
 SRCDIR = src
 
-CXX = g++
+CXX = gcc
 SDLFLAGS = -lSDL2 -lSDL2_image
 DEPFLAGS = -MP -MD
 CFLAGS = -Wall -Wextra $(SDLFLAGS) $(DEPFLAGS)
-CPPFILES = $(wildcard $(SRCDIR)/*.cpp)
-OBJFILES	= $(patsubst %.cpp, %.o, $(patsubst $(SRCDIR)/%, $(BUILDIR)/%, $(CPPFILES)))
-DEPFILES = $(patsubst %.cpp, %.d, $(patsubst $(SRCDIR)/%, $(BUILDIR)/%, $(CPPFILES)))
+CFILES = $(wildcard $(SRCDIR)/*.c)
+OBJFILES	= $(patsubst %.c, %.o, $(patsubst $(SRCDIR)/%, $(BUILDIR)/%, $(CFILES)))
+DEPFILES = $(patsubst %.c, %.d, $(patsubst $(SRCDIR)/%, $(BUILDIR)/%, $(CFILES)))
 
-all: clear $(BINARY) run
-clear:
-	clear
-$(BINARY): $(OBJFILES)
+all: $(BINARY) run
+$(BINARY): $(build) $(OBJFILES)
 	$(CXX) -o $@ $^ $(SDLFLAGS)
 
-$(BUILDIR)/%.o: $(SRCDIR)/%.cpp
+build:
+	mkdir build
+
+$(BUILDIR)/%.o: $(SRCDIR)/%.c
 	$(CXX) $(CFLAGS) -c -o $@ $<
 
 clean:
@@ -26,3 +27,4 @@ run:
 	./$(BINARY)
 
 -include $(DEPFILES)
+
